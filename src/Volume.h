@@ -52,11 +52,29 @@ namespace conf
 			return &data[(x + (y + z * m_height)* m_width) * m_channels + channel];
 		}
 
+		double getNonInterpolated(int x, int y, int z, int channel = 0)
+		{
+			double x_s = x / m_x_scale;
+			double y_s = y / m_y_scale;
+			double z_s = z / m_z_scale;
+
+			if (x_s < 0 || y_s < 0 || z_s < 0
+				|| x_s >(m_width - 1) || y_s > m_height - 1 || z_s > m_depth - 1)
+				return 0;
+
+			return *get(x_s, y_s, z_s, channel);
+
+		}
+
 		double getInterpolated(double x, double y, double z, int channel = 0)
 		{
 			double x_s = x / m_x_scale;
 			double y_s = y / m_y_scale;
 			double z_s = z / m_z_scale;
+
+			if (x_s < 0 || y_s < 0 || z_s < 0
+				|| x_s >(m_width - 1) || y_s > m_height - 1 || z_s > m_depth - 1)
+				return 0;
 
 			unsigned int x_0 = floor(x_s);
 			unsigned int y_0 = floor(y_s);

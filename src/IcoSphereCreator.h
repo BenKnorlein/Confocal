@@ -50,6 +50,33 @@ namespace conf
 		float z;
 	};
 
+	inline Point operator+(Point a,const Point b)
+	{
+		Point p;
+		p.x = a.x + b.x;
+		p.y = a.y + b.y;
+		p.z = a.z + b.z;
+		return p;
+	}
+	inline Point operator-(Point a, const Point b)
+	{
+		Point p;
+		p.x = a.x - b.x;
+		p.y = a.y - b.y;
+		p.z = a.z - b.z;
+		return p;
+	}
+
+	inline Point operator*(double a, const Point b)
+	{
+		Point p;
+		p.x = a * b.x;
+		p.y = a * b.y;
+		p.z = a * b.z;
+		return p;
+	}
+	
+	
 	class IcoSphereCreator
 	{
 	public:

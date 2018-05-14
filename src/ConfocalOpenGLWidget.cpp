@@ -58,15 +58,16 @@
 using namespace conf;
 
 
-GLfloat LightAmbient[] = { 0.3f, 0.3f, 0.3f, 1.0f }; // Ambient Light Values
-GLfloat LightDiffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f }; // Diffuse Light Values
-GLfloat LightPosition[] = { 0.0f, 10.0f, 0.0f, 1.0f }; // Light Position
+//GLfloat LightAmbient[] = { 0.3f, 0.3f, 0.3f, 1.0f }; // Ambient Light Values
+//GLfloat LightDiffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f }; // Diffuse Light Values
+//GLfloat LightPosition[] = { 0.0f, 10.0f, 0.0f, 1.0f }; // Light Position
 
 ConfocalOpenGLWidget::ConfocalOpenGLWidget(QWidget* parent, Qt::WindowFlags flags) :QOpenGLWidget(parent, flags), eyedistance{ -2 }, azimuth{ 50 }, polar{ 4 }, width{ 10 }
 , height{ 10 }, textureID{ 0 }, m_texture_update{ false }, m_mesh_update{ false }, m_mesh_index_buffer{ 0 }, m_mesh_vertex_buffer{ 0 }, m_texture_loaded{ false }, m_mesh_loaded{ false }, m_mesh_size{0}
 {
 	connect(Data<unsigned short>::getInstance()->emitter(), SIGNAL(volume_updated()), this, SLOT(update_texture_posted()));
 	connect(Data<unsigned short>::getInstance()->emitter(), SIGNAL(mesh_updated()), this, SLOT(update_mesh_posted()));
+	connect(Data<unsigned short>::getInstance()->emitter(), SIGNAL(active_point_changed()), this, SLOT(update()));
 	connect(Data<unsigned short>::getInstance()->emitter(), SIGNAL(render_threshold_changed(float)), this, SLOT(render_threshold_posted(float)));
 	connect(Data<unsigned short>::getInstance()->emitter(), SIGNAL(render_multiplier_changed(float)), this, SLOT(render_multiplier_posted(float)));
 }
@@ -138,6 +139,10 @@ void ConfocalOpenGLWidget::updateTexture()
 
 	m_texture_update = false;
 	m_texture_loaded = true;
+
+	Data<unsigned short>::getInstance()->set_texture_id(textureID);
+
+	emit Data<unsigned short>::getInstance()->emitter()->texture_updated();
 }
 
 void ConfocalOpenGLWidget::updateMesh()
@@ -207,9 +212,9 @@ void ConfocalOpenGLWidget::paintGL()
 		//to_volume = glm::rotate(to_volume, glm::radians(90.0f), glm::vec3(1, 0, 0));
 		//to_volume = glm::rotate(to_volume, glm::radians(90.0f), glm::vec3(0, 1, 0));
 
-		glm::vec4 center = glm::vec4(Data<unsigned short>::getInstance()->model()[0],
-			Data<unsigned short>::getInstance()->model()[1],
-			Data<unsigned short>::getInstance()->model()[2], 1);
+		glm::vec4 center = glm::vec4(Data<unsigned short>::getInstance()->center()[0],
+			Data<unsigned short>::getInstance()->center()[1],
+			Data<unsigned short>::getInstance()->center()[2], 1);
 
 		center = to_volume * center;
 		MV = glm::translate(MV, -glm::vec3(center.x / center.w, center.y / center.w, center.z / center.w));
@@ -239,6 +244,27 @@ void ConfocalOpenGLWidget::paintGL()
 		//unload
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		//Draw Line
+		if (Data<unsigned short>::getInstance()->active_point() >= 0)
+		{
+			Point center;
+			center.x = Data<unsigned short>::getInstance()->center()[0];
+			center.y = Data<unsigned short>::getInstance()->center()[1];
+			center.z = Data<unsigned short>::getInstance()->center()[2];
+
+			Point point = Data<unsigned short>::getInstance()->mesh_points()[Data<unsigned short>::getInstance()->active_point()];
+			Point dir = point - center;
+			
+			glBegin(GL_LINES);
+			glColor3f(1.0, 1.0, 1.0);
+			glVertex3f(center.x, center.y, center.z);
+			glVertex3f(center.x + dir.x * 1.5,
+					center.y + dir.y * 1.5,
+					center.z + dir.z * 1.5);
+			glEnd();
+		}
+		
 		glPopMatrix();
 	}
 	//glClear(GL_DEPTH_BUFFER_BIT);
@@ -267,6 +293,7 @@ void ConfocalOpenGLWidget::paintGL()
 	glVertex3f(-0.5, 0.5, -0.5);
 
 	glEnd();
+
 	if (m_texture_loaded){
 		glBindTexture(GL_TEXTURE_3D, textureID);
 

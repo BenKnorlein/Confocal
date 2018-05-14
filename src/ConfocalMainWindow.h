@@ -39,19 +39,25 @@ namespace Ui
 namespace conf
 {
 	class ConfocalDockWidget;
-
+	class ConfocalSliceView;
+	class PlotWindow;
 
 	class ConfocalMainWindow : public QMainWindow
 	{
 		Q_OBJECT
 	public:
-		ConfocalMainWindow(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+		static ConfocalMainWindow* getInstance();
 		virtual ~ConfocalMainWindow();
 
 	private:
+		ConfocalMainWindow(QWidget * parent = 0, Qt::WindowFlags flags = 0);
+		static ConfocalMainWindow* instance;
+
 		Ui::ConfocalMainWindow* main;
 
 		ConfocalDockWidget *dockWidget;
+		ConfocalSliceView* sliceview;
+		PlotWindow* plotwindow;
 	};
 }
 #endif // CONFOCALMAINWINDOW_H

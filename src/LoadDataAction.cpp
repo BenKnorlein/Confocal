@@ -48,7 +48,7 @@
 
 using namespace conf;
 
-LoadDataAction::LoadDataAction(std::string folder) : m_folder{folder}
+LoadDataAction::LoadDataAction(std::string folder) : m_folder(folder)
 {
 
 }
@@ -61,10 +61,12 @@ void LoadDataAction::run()
 	{
 		if (contains_string(name, "ch1"))
 		{
+			std::cerr << "Load Image " << Data<unsigned short>::getInstance()->image_r().size() << " Channel 1 - " << name << std::endl;
 			Data<unsigned short>::getInstance()->image_r().push_back(std::move(cv::imread(name, CV_LOAD_IMAGE_ANYDEPTH)));
 		}
 		else if (contains_string(name, "ch2"))
 		{
+			std::cerr << "Load Image " << Data<unsigned short>::getInstance()->image_g().size() << " Channel 2 - " << name << std::endl;
 			Data<unsigned short>::getInstance()->image_g().push_back(std::move(cv::imread(name, CV_LOAD_IMAGE_ANYDEPTH)));
 		}
 	}
@@ -91,7 +93,6 @@ std::vector<std::string> LoadDataAction::readTiffs(std::string foldername)
 	if ((dir = opendir(foldername.c_str())) != NULL) {
 		/* print all the files and directories within directory */
 		while ((ent = readdir(dir)) != NULL) {
-			printf("%s\n", ent->d_name);
 			if (ends_with_string(ent->d_name, "tiff"))
 			{
 				out_vector.push_back(foldername + OS_SLASH + ent->d_name);

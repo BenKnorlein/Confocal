@@ -32,8 +32,22 @@
 
 #include "IcoSphereCreator.h"
 #include <list>
+#include <numeric>
 
 using namespace conf;
+
+std::vector<size_t> sort_indexes(const std::vector<Point> &v) {
+
+	// initialize original index locations
+	std::vector<size_t> idx(v.size());
+	iota(idx.begin(), idx.end(), 0);
+
+	// sort indexes based on comparing values in v
+	sort(idx.begin(), idx.end(),
+		[&v](size_t i1, size_t i2) {return v[i1].z < v[i2].z; });
+
+	return idx;
+}
 
 void IcoSphereCreator::create(int recursionLevel, std::vector<TriangleIndices>& indices, std::vector<Point>& points)
 {
@@ -115,6 +129,25 @@ void IcoSphereCreator::create(int recursionLevel, std::vector<TriangleIndices>& 
 	{
 		indices.push_back(tri);
 	}
+	std::vector<size_t> sorted = sort_indexes(*m_points);
+	std::vector<Point> m_points_tmp;
+	size_t * sorted2 = new size_t [sorted.size()];
+	for (int i = 0; i < m_points->size(); i++)
+	{
+		m_points_tmp.push_back((*m_points)[i]);
+		sorted2[sorted[i]] = i;
+	}
+	for (int i = 0; i < m_points->size(); i++)
+	{
+		(*m_points)[i] = m_points_tmp[sorted[i]];
+	}
+	for (int i = 0; i < indices.size(); i++)
+	{
+		indices[i].v1 = sorted2[indices[i].v1];
+		indices[i].v2 = sorted2[indices[i].v2];
+		indices[i].v3 = sorted2[indices[i].v3];
+	}
+	delete[] sorted2;
 }
 
 

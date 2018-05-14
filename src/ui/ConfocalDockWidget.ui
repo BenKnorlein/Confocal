@@ -7,36 +7,21 @@
     <x>0</x>
     <y>0</y>
     <width>667</width>
-    <height>726</height>
+    <height>274</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Tools</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" colspan="2">
-     <widget class="QPushButton" name="pushButton_Compute">
-      <property name="text">
-       <string>Compute Center</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="2">
-     <widget class="QPushButton" name="pushButton_Compute_2">
-      <property name="text">
-       <string>Save Data</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QPushButton" name="pushButton_Load">
-      <property name="text">
-       <string>Load Folder</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
+    <item row="5" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
        <string>Render Options</string>
@@ -147,7 +132,21 @@
       <zorder>label_Multiplier</zorder>
      </widget>
     </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QPushButton" name="pushButton_Compute">
+      <property name="text">
+       <string>Init Sphere</string>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="0" colspan="2">
+     <widget class="QPushButton" name="pushButton_Compute_2">
+      <property name="text">
+       <string>Save Data</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -159,6 +158,27 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QPushButton" name="pushButton_Load">
+      <property name="text">
+       <string>Load Folder</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QPushButton" name="pushButton_Refine">
+      <property name="text">
+       <string>Refine Mesh</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="2">
+     <widget class="QPushButton" name="pushButton_Masks">
+      <property name="text">
+       <string>Create and Save Masks</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

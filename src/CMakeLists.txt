@@ -5,11 +5,17 @@ set(CMAKE_CXX_STANDARD 11)
     endif(COMMAND cmake_policy)
 
 
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI REQUIRED)
+FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI PrintSupport REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 FIND_PACKAGE(OpenCV REQUIRED )
 FIND_PACKAGE(GLM REQUIRED )
+FIND_PACKAGE(Matlab COMPONENTS MX_LIBRARY REQUIRED )
+#Set Matlab mclmcrrt library
+list(GET Matlab_LIBRARIES 0 Matlab_LIBRARY)
+get_filename_component(Matlab_LIBRARY_DIR ${Matlab_LIBRARY} DIRECTORY)
+SET(Matlab_LIBRARIES ${Matlab_LIBRARIES} ${Matlab_LIBRARY_DIR}/mclmcrrt)
+#message(get_filename_component(DIRECTORY list(GET ${Matlab_LIBRARIES} 1)))
 
 #Allow a console window on Windows for debugging
 OPTION(WITH_CONSOLE "Build with a command line for debugging" OFF)
@@ -27,6 +33,8 @@ set(CMAKE_AUTOMOC ON)
 SET(Confocal_FORMS
 	ui/ConfocalDockWidget.ui
 	ui/ConfocalMainWindow.ui
+	ui/PlotWindow.ui
+	ui/ConfocalSliceView.ui
 )
 QT5_WRAP_UI(Confocal_FORMS_HEADERS_GEN ${Confocal_FORMS})
 
@@ -39,7 +47,9 @@ include_directories(
   ${Qt5Core_INCLUDE_DIRS}
   ${Qt5Widgets_INCLUDE_DIRS}
   ${Qt5GUI_INCLUDE_DIRS}
+  ${Qt5PrintSupport_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
+  ${Matlab_INCLUDE_DIRS}
 )
 
 add_executable(Confocal
@@ -62,12 +72,26 @@ add_executable(Confocal
   VolumeSliceRender.cpp
   VolumeSliceRenderShader.h
   VolumeSliceRenderShader.cpp
+  RefineMeshAction.h
+  RefineMeshAction.cpp
   Data.cpp
   Data.h
   Shader.cpp
   Shader.h
   IcoSphereCreator.cpp
   IcoSphereCreator.h
+  PlotWindow.cpp
+  PlotWindow.h
+  ConfocalSliceView.h
+  ConfocalSliceView.cpp
+  ConfocalSliceViewWidget.h
+  ConfocalSliceViewWidget.cpp
+  GenerateMasksAction.h
+  GenerateMasksAction.cpp
+  UpdateResultsAction.h
+  UpdateResultsAction.cpp
+  external/qcustomplot.cpp
+  external/qcustomplot.h
   ${Confocal_FORMS_HEADERS_GEN}
 )
 
@@ -77,7 +101,10 @@ target_link_libraries(Confocal
   ${OpenCV_LIBS}
   ${Qt5Core_LIBRARIES}
   ${Qt5Widgets_LIBRARIES}
+  ${Qt5PrintSupport_LIBRARIES}
   ${Qt5GUI_LIBRARIES}
   ${GLM_LIBRARIES}
+  ${Matlab_LIBRARIES}
+  ${CMAKE_CURRENT_SOURCE_DIR}/matlab/libIso
 )
 

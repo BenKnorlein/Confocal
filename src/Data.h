@@ -46,6 +46,9 @@ namespace conf
 	signals :
 		void volume_updated();
 		void mesh_updated();
+		void texture_updated();
+		void active_point_changed();
+		void updateSliceView();
 		void render_threshold_changed(float val);
 		void render_multiplier_changed(float val);
 	};
@@ -77,6 +80,11 @@ namespace conf
 			return m_image_g;
 		}
 
+		std::vector<cv::Mat> &distancemap()
+		{
+			return m_distancemap;
+		}
+
 		std::unique_ptr< Volume <T> > &volume(){
 			return m_volume;
 		}
@@ -101,26 +109,37 @@ namespace conf
 			emit m_emitter.volume_updated();
 		}
 
-		void setModel(std::vector<double> &model)
+		void setModel(std::vector<double> &center, double max_distance, bool updateMesh)
 		{
-			m_model = model;
-			m_mesh_indices.clear();
-			m_mesh_points.clear();
+			m_max_distance = max_distance;
+			m_center = center;
 
-			IcoSphereCreator creator; 
-			creator.create(1, m_mesh_indices, m_mesh_points);
-			for (auto &pt : m_mesh_points)
-			{
-				pt.x = pt.x * model[3] + model[0];
-				pt.y = pt.y * model[3] + model[1];
-				pt.z = pt.z * model[3] + model[2];
+			if (updateMesh){
+				m_mesh_indices.clear();
+				m_mesh_points.clear();
+
+				IcoSphereCreator creator;
+				creator.create(4, m_mesh_indices, m_mesh_points);
+				for (auto &pt : m_mesh_points)
+				{
+					pt.x = pt.x * m_max_distance + m_center[0];
+					pt.y = pt.y * m_max_distance + m_center[1];
+					pt.z = pt.z * m_max_distance + m_center[2];
+				}
+
+
+				emit m_emitter.mesh_updated();
 			}
-			emit m_emitter.mesh_updated();
 		}
 
-		const std::vector<double> &model() const
+		const std::vector<double> &center() const
 		{
-			return m_model;
+			return m_center;
+		}
+
+		double max_distance() const
+		{
+			return m_max_distance;
 		}
 
 		DataEmitter *emitter()
@@ -128,18 +147,43 @@ namespace conf
 			return &m_emitter;
 		}
 
-		std::vector<TriangleIndices> mesh_indices() const
+		std::vector<TriangleIndices> &mesh_indices()
 		{
 			return m_mesh_indices;
 		}
 
-		std::vector<Point> mesh_points() const
+		std::vector<Point> &mesh_points()
 		{
 			return m_mesh_points;
 		}
 
+		unsigned texture_id() const
+		{
+			return m_texture_id;
+		}
+
+		void set_texture_id(const unsigned texture_id)
+		{
+			m_texture_id = texture_id;
+		}
+
+		int active_point() const
+		{
+			return m_active_point;
+		}
+
+		void set_active_point(const int active_point)
+		{
+			this->m_active_point = active_point;
+		}
+
+		std::vector<std::vector<double> > &results()
+		{
+			return m_results;
+		}
+
 	private:
-		Data<T>(){};
+		Data<T>() : m_active_point(-1),  m_max_distance(0){};
 
 		static std::unique_ptr<Data <T> > m_instance;
 
@@ -149,13 +193,25 @@ namespace conf
 
 		std::vector <cv::Mat> m_image_g;
 
-		std::vector <double> m_model;
+		std::vector <cv::Mat> m_distancemap;
+
+		double m_max_distance;
+
+		std::vector <double> m_center;
 
 		std::vector <TriangleIndices> m_mesh_indices;
 
-		std::vector<Point> m_mesh_points;
+		std::vector <Point> m_mesh_points;
 
+		// Red (pixel normalized) - Red (region normalized)- Red - Green - NbPixel - sd Red (normalized) - sd Red - sd Green
+		std::vector <std::vector <double> > m_results;
+
+		int m_active_point;
+
+	private:
 		DataEmitter m_emitter;
+
+		unsigned int m_texture_id;
 	};
 
 	template<class T>

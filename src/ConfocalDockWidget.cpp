@@ -37,12 +37,17 @@
 #include "SphereFit.h"
 #include "Data.h"
 #include <QFileDialog>
+#include "RefineMeshAction.h"
+#include "GenerateMasksAction.h"
 
 using namespace conf;
 
 ConfocalDockWidget::ConfocalDockWidget(QWidget* parent, Qt::WindowFlags flags) :QDockWidget(parent, flags), dock(new Ui::ConfocalDockWidget)
 {
 	dock->setupUi(this);
+	dock->groupBox->setVisible(false);
+	dock->pushButton_Refine->setVisible(false);
+	dock->pushButton_Compute_2->setVisible(false);
 }
 
 ConfocalDockWidget::~ConfocalDockWidget()
@@ -51,7 +56,6 @@ ConfocalDockWidget::~ConfocalDockWidget()
 
 void ConfocalDockWidget::on_pushButton_Load_clicked()
 {
-	//QString folder = "D:\\data\\Beth\\row2\\r02c03f01"; //TODO folder variable
 	QString folder = "D:\\data\\Beth\\row7\\row7\\r07c06f01"; //TODO folder variable
 	folder = QFileDialog::getExistingDirectory(this, "Select datafolder", folder);
 	LoadDataAction(folder.toStdString()).run();
@@ -60,6 +64,17 @@ void ConfocalDockWidget::on_pushButton_Load_clicked()
 void ConfocalDockWidget::on_pushButton_Compute_clicked()
 {
 	SphereFit().run();
+}
+
+void ConfocalDockWidget::on_pushButton_Refine_clicked()
+{
+	RefineMeshAction act;
+	act.run();
+}
+
+void ConfocalDockWidget::on_pushButton_Masks_clicked()
+{
+	GenerateMasksAction().run();
 }
 
 void ConfocalDockWidget::on_horizontalSlider_Multiplier_valueChanged(int value)

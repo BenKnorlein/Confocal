@@ -217,6 +217,32 @@ void SphereFit::run()
 	auto check_function = std::bind(&conf::SphereFit::check_function, this, std::placeholders::_1);
 
 	conf::MSAC msac;
-	Data<unsigned short>::getInstance()->setModel(msac.run(getMinSamples(), pts, fit_function, eval_function, check_function, 4, 1000, 99));
-	std::cerr << Data<unsigned short>::getInstance()->model()[0] << " " << Data<unsigned short>::getInstance()->model()[1] << " " << Data<unsigned short>::getInstance()->model()[2] << " " << Data<unsigned short>::getInstance()->model()[3] << std::endl;
+	std::vector<double> model = msac.run(getMinSamples(), pts, fit_function, eval_function, check_function, 4, 100, 99);
+	Data<unsigned short>::getInstance()->setModel(model,model[3],true);
+	std::cerr << "Center : " << Data<unsigned short>::getInstance()->center()[0] << " , " << Data<unsigned short>::getInstance()->center()[1] << " , " << Data<unsigned short>::getInstance()->center()[2] << std::endl;
+		std::cerr <<"Radius : " << Data<unsigned short>::getInstance()->max_distance() << std::endl;
+
+		Data<unsigned short>::getInstance()->distancemap().clear();
+		int y, x;
+		for (int z = 0; z < Data<unsigned short>::getInstance()->volume()->get_depth(); z++)
+		{
+			cv::Mat distance_slice = cv::Mat(Data<unsigned short>::getInstance()->volume()->get_height(), Data<unsigned short>::getInstance()->volume()->get_width(), CV_64F,0.0f);
+
+			for (x = 0; x < Data<unsigned short>::getInstance()->volume()->get_width(); x++)
+			{
+				for (y = 0; y < Data<unsigned short>::getInstance()->volume()->get_height(); y++)
+				{
+					double val = std::pow(x * Data<unsigned short>::getInstance()->volume()->get_x_scale() - Data<unsigned short>::getInstance()->center()[0], 2) 
+						+ std::pow(y * Data<unsigned short>::getInstance()->volume()->get_y_scale() - Data<unsigned short>::getInstance()->center()[1], 2)
+						+ std::pow(z * Data<unsigned short>::getInstance()->volume()->get_z_scale() - Data<unsigned short>::getInstance()->center()[2], 2);
+
+					val = Data<unsigned short>::getInstance()->max_distance() - std::sqrt(val);
+					if (val > 0){
+						distance_slice.at<double>(y, x) = val;
+					}
+				}
+			}
+
+			Data<unsigned short>::getInstance()->distancemap().push_back(distance_slice);
+		}
 }

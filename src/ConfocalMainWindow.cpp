@@ -34,18 +34,36 @@
 #include "ui_ConfocalMainWindow.h"
 
 #include "ConfocalDockWidget.h"
+#include "ConfocalSliceView.h"
+#include "Plotwindow.h"
+#include "PlotWindow.h"
 
 using namespace conf;
+
+ConfocalMainWindow* ConfocalMainWindow::instance = NULL;
 
 ConfocalMainWindow::ConfocalMainWindow(QWidget* parent, Qt::WindowFlags flags) : QMainWindow(parent, flags), main(new Ui::ConfocalMainWindow)
 {
 	main->setupUi(this);
 
 	dockWidget = new conf::ConfocalDockWidget(this);
-	addDockWidget(static_cast<Qt::DockWidgetArea>(1), dockWidget);
+	plotwindow = new conf::PlotWindow(this);
+	sliceview = new conf::ConfocalSliceView(this);
+	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, dockWidget);
+	addDockWidget(Qt::DockWidgetArea::BottomDockWidgetArea, plotwindow);
+	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, sliceview);
 }
 
 ConfocalMainWindow::~ConfocalMainWindow()
 {
 
+}
+
+ConfocalMainWindow* ConfocalMainWindow::getInstance()
+{
+	if (!instance)
+	{
+		instance = new ConfocalMainWindow();
+	}
+	return instance;
 }
