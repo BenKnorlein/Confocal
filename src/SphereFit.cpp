@@ -220,7 +220,7 @@ void SphereFit::run()
 	std::vector<double> model = msac.run(getMinSamples(), pts, fit_function, eval_function, check_function, 4, 100, 99);
 	Data<unsigned short>::getInstance()->setModel(model,model[3],true);
 	std::cerr << "Center : " << Data<unsigned short>::getInstance()->center()[0] << " , " << Data<unsigned short>::getInstance()->center()[1] << " , " << Data<unsigned short>::getInstance()->center()[2] << std::endl;
-		std::cerr <<"Radius : " << Data<unsigned short>::getInstance()->max_distance() << std::endl;
+	std::cerr <<"Radius : " << Data<unsigned short>::getInstance()->max_distance() << std::endl;
 
 		Data<unsigned short>::getInstance()->distancemap().clear();
 		int y, x;

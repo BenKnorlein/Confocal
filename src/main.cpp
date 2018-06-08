@@ -5,17 +5,25 @@
 #endif
 #endif
 
-#include <QApplication>
-#include "ConfocalMainWindow.h"
+#ifdef WITH_UI
+	#include <QApplication>
+	#include "ConfocalMainWindow.h"
+#endif
+
 
 #include <opencv/cv.h>
 #include <iostream>
 #include "Data.h"
 #include <mclmcrrt.h>
+#include "LoadDataAction.h"
+#include "SphereFit.h"
+#include "GenerateMasksAction.h"
+#include "UpdateResultsAction.h"
 
 bool m_Initialized_MCR = false;
 //using namespace conf;
 
+#ifdef WITH_UI
 class MApplication : public QApplication
 {
 public:
@@ -44,15 +52,43 @@ public:
 		return false;
 	}
 };
+#endif
 
 int main(int argc, char** argv)
 {
 	conf::Data<float>::getInstance();
+	bool exit_code = 0;
 
+#ifdef WITH_UI
 	MApplication app(argc, argv);
 	conf::ConfocalMainWindow* widget = conf::ConfocalMainWindow::getInstance();
 	widget->show();
-	bool exit_code = app.exec();
+	exit_code = app.exec();
+#else
+	//required batch parameters
+	std::string filename;
+
+
+	//parse parameters
+	for (int index = 0; index < argc; ++index)
+	{
+		std::string c = argv[index];
+		if (c == "-i")
+		{
+			index++;
+			std::cerr << "set" << std::endl;
+			if (index < argc)
+				filename = argv[index]; 
+		}
+	}
+	//chack validity of input
+	std::cerr << "Loading folder " << filename << std::endl;
+	//start processing
+	conf::LoadDataAction(filename).run();
+	conf::SphereFit().run();
+	conf::GenerateMasksAction().run();
+	conf::UpdateResultsAction(10).run();
+#endif
 
 	if (m_Initialized_MCR)
 	{

@@ -279,7 +279,9 @@ void GenerateMasksAction::run()
 		std::cerr << "Maximum Distance " << max_distance << std::endl;
 
 		Data<unsigned short>::getInstance()->results().clear();
+#ifdef WITH_UI
 		Data<unsigned short>::getInstance()->emitter()->mesh_updated();
+#endif
 	}
 
 

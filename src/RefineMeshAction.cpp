@@ -31,8 +31,9 @@
 #endif
 
 #include "RefineMeshAction.h"
-#include <qmath.h>
 #include "Data.h"
+# define M_PI           3.14159265358979323846  /* pi */
+
 
 using namespace conf;
 
@@ -131,6 +132,8 @@ void RefineMeshAction::run()
 			}
 		}*/
 	}
+#ifdef WITH_UI
 	emit Data<unsigned short>::getInstance()->emitter()->mesh_updated();
 	emit Data<unsigned short>::getInstance()->emitter()->updateSliceView();
+#endif
 }

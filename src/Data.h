@@ -34,10 +34,14 @@
 #include "IcoSphereCreator.h"
 #include <vector>
 #include <opencv2/core/mat.hpp>
-#include <QObject>
+#ifdef WITH_UI
+	#include <QObject>
+#endif
 
 namespace conf
 {
+
+#ifdef WITH_UI
 	class DataEmitter : public QObject
 	{
 		Q_OBJECT
@@ -52,6 +56,7 @@ namespace conf
 		void render_threshold_changed(float val);
 		void render_multiplier_changed(float val);
 	};
+#endif
 
 	template<class T>
 	class Data
@@ -106,7 +111,9 @@ namespace conf
 					}
 				}
 			}	
+#ifdef WITH_UI
 			emit m_emitter.volume_updated();
+#endif
 		}
 
 		void setModel(std::vector<double> &center, double max_distance, bool updateMesh)
@@ -127,8 +134,9 @@ namespace conf
 					pt.z = pt.z * m_max_distance + m_center[2];
 				}
 
-
+#ifdef WITH_UI
 				emit m_emitter.mesh_updated();
+#endif
 			}
 		}
 
@@ -142,10 +150,12 @@ namespace conf
 			return m_max_distance;
 		}
 
+#ifdef WITH_UI
 		DataEmitter *emitter()
 		{
 			return &m_emitter;
 		}
+#endif
 
 		std::vector<TriangleIndices> &mesh_indices()
 		{
@@ -209,7 +219,9 @@ namespace conf
 		int m_active_point;
 
 	private:
+#ifdef WITH_UI
 		DataEmitter m_emitter;
+#endif
 
 		unsigned int m_texture_id;
 	};

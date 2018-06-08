@@ -4,12 +4,18 @@ set(CMAKE_CXX_STANDARD 11)
       cmake_policy(SET CMP0003 NEW)
     endif(COMMAND cmake_policy)
 
+OPTION(WITH_UI "Build with a command line for debugging" OFF)
 
-FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI PrintSupport REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
+if(WITH_UI)
+	FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI PrintSupport REQUIRED)
+	find_package(OpenGL REQUIRED)
+	find_package(GLEW REQUIRED)
+	ADD_DEFINITIONS(-DWITH_UI)	
+ENDIF()
+
 FIND_PACKAGE(OpenCV REQUIRED )
 FIND_PACKAGE(GLM REQUIRED )
+
 FIND_PACKAGE(Matlab COMPONENTS MX_LIBRARY REQUIRED )
 #Set Matlab mclmcrrt library
 list(GET Matlab_LIBRARIES 0 Matlab_LIBRARY)
@@ -18,93 +24,120 @@ SET(Matlab_LIBRARIES ${Matlab_LIBRARIES} ${Matlab_LIBRARY_DIR}/mclmcrrt)
 #message(get_filename_component(DIRECTORY list(GET ${Matlab_LIBRARIES} 1)))
 
 #Allow a console window on Windows for debugging
-OPTION(WITH_CONSOLE "Build with a command line for debugging" OFF)
 IF(WIN32)
 	IF(WITH_CONSOLE)
-		ADD_DEFINITIONS(-DWITH_CONSOLE)
-	ELSE()
 		SET(GUI_TYPE WIN32)
 		SET(QT_USE_QMAIN true)
+		OPTION(WITH_CONSOLE "Build with a command line for debugging" ON)
+		IF(WITH_CONSOLE)
+			ADD_DEFINITIONS(-DWITH_CONSOLE)		
+		ENDIF()
+	ELSE()
+		ADD_DEFINITIONS(-DWITH_CONSOLE)
 	ENDIF()
 ENDIF(WIN32)
 
+if(WITH_UI)
+	set(CMAKE_AUTOMOC ON)
+	SET(Confocal_FORMS
+		ui/ConfocalDockWidget.ui
+		ui/ConfocalMainWindow.ui
+		ui/PlotWindow.ui
+		ui/ConfocalSliceView.ui
+	)
+	QT5_WRAP_UI(Confocal_FORMS_HEADERS_GEN ${Confocal_FORMS})
 
-set(CMAKE_AUTOMOC ON)
-SET(Confocal_FORMS
-	ui/ConfocalDockWidget.ui
-	ui/ConfocalMainWindow.ui
-	ui/PlotWindow.ui
-	ui/ConfocalSliceView.ui
-)
-QT5_WRAP_UI(Confocal_FORMS_HEADERS_GEN ${Confocal_FORMS})
+	include_directories(
+	  ${OPENGL_INCLUDE_DIR}
+	  ${GLEW_INCLUDE_DIRS}
+	  ${Qt5Core_INCLUDE_DIRS}
+	  ${Qt5Widgets_INCLUDE_DIRS}
+	  ${Qt5GUI_INCLUDE_DIRS}
+	  ${Qt5PrintSupport_INCLUDE_DIRS}
+	)
+ENDIF()
 
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR} 
   ${CMAKE_CURRENT_SOURCE_DIR} 
-  ${OPENGL_INCLUDE_DIR}
-  ${GLEW_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${Qt5Core_INCLUDE_DIRS}
-  ${Qt5Widgets_INCLUDE_DIRS}
-  ${Qt5GUI_INCLUDE_DIRS}
-  ${Qt5PrintSupport_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
   ${Matlab_INCLUDE_DIRS}
 )
 
-add_executable(Confocal
-  main.cpp
-  MSAC.cpp
-  MSAC.h
-  SphereFit.cpp
-  SphereFit.h
-  Volume.cpp
-  Volume.h
-  ConfocalDockWidget.h
-  ConfocalDockWidget.cpp
-  ConfocalMainWindow.h
-  ConfocalMainWindow.cpp
-  ConfocalOpenGLWidget.h
-  ConfocalOpenGLWidget.cpp
-  LoadDataAction.cpp
-  LoadDataAction.h
-  VolumeSliceRender.h
-  VolumeSliceRender.cpp
-  VolumeSliceRenderShader.h
-  VolumeSliceRenderShader.cpp
-  RefineMeshAction.h
-  RefineMeshAction.cpp
-  Data.cpp
-  Data.h
-  Shader.cpp
-  Shader.h
-  IcoSphereCreator.cpp
-  IcoSphereCreator.h
-  PlotWindow.cpp
-  PlotWindow.h
-  ConfocalSliceView.h
-  ConfocalSliceView.cpp
-  ConfocalSliceViewWidget.h
-  ConfocalSliceViewWidget.cpp
-  GenerateMasksAction.h
-  GenerateMasksAction.cpp
-  UpdateResultsAction.h
-  UpdateResultsAction.cpp
-  external/qcustomplot.cpp
-  external/qcustomplot.h
-  ${Confocal_FORMS_HEADERS_GEN}
+set(SOURCES
+	main.cpp
+	MSAC.cpp
+	MSAC.h
+	SphereFit.cpp
+    SphereFit.h
+    Volume.cpp
+    Volume.h
+	LoadDataAction.cpp
+    LoadDataAction.h
+	RefineMeshAction.h
+    RefineMeshAction.cpp
+	Data.cpp
+    Data.h
+	IcoSphereCreator.cpp
+	IcoSphereCreator.h
+	GenerateMasksAction.h
+    GenerateMasksAction.cpp
+    UpdateResultsAction.h
+    UpdateResultsAction.cpp
 )
 
+if(WITH_UI)
+	set(SOURCES
+		${SOURCES}
+		  ConfocalDockWidget.h
+		  ConfocalDockWidget.cpp
+		  ConfocalMainWindow.h
+		  ConfocalMainWindow.cpp
+		  ConfocalOpenGLWidget.h
+		  ConfocalOpenGLWidget.cpp
+		  VolumeSliceRender.h
+		  VolumeSliceRender.cpp
+		  VolumeSliceRenderShader.h
+		  VolumeSliceRenderShader.cpp
+		  Shader.cpp
+		  Shader.h
+		  PlotWindow.cpp
+		  PlotWindow.h
+		  ConfocalSliceView.h
+		  ConfocalSliceView.cpp
+		  ConfocalSliceViewWidget.h
+		  ConfocalSliceViewWidget.cpp
+		  external/qcustomplot.cpp
+		  external/qcustomplot.h
+		  ${Confocal_FORMS_HEADERS_GEN}
+	)
+endif()
+
+add_executable(Confocal
+	${SOURCES}
+)
+
+set(LIBRARIES
+	${OpenCV_LIBS}
+	${GLM_LIBRARIES}
+	${Matlab_LIBRARIES}
+	${CMAKE_CURRENT_SOURCE_DIR}/matlab/libIso
+)
+
+if(WITH_UI)
+	set(LIBRARIES
+		${LIBRARIES}
+		    ${GLEW_LIBRARY}
+			${OPENGL_LIBRARY}
+			${Qt5Core_LIBRARIES}
+			${Qt5Widgets_LIBRARIES}
+			${Qt5PrintSupport_LIBRARIES}
+			${Qt5GUI_LIBRARIES}
+	)
+endif()
+
 target_link_libraries(Confocal
-  ${GLEW_LIBRARY}
-  ${OPENGL_LIBRARY}
-  ${OpenCV_LIBS}
-  ${Qt5Core_LIBRARIES}
-  ${Qt5Widgets_LIBRARIES}
-  ${Qt5PrintSupport_LIBRARIES}
-  ${Qt5GUI_LIBRARIES}
-  ${GLM_LIBRARIES}
-  ${Matlab_LIBRARIES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/matlab/libIso
+  ${LIBRARIES}
 )
 

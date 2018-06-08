@@ -38,7 +38,8 @@ using namespace conf;
 
 void UpdateResultsAction::run()
 {
-	std::cerr << "UpdateResultsAction for " << m_nb_regions << " regions" << std::endl;
+	m_nb_regions = ceil((Data<unsigned short>::getInstance()->max_distance()  / m_regions_size));
+	std::cerr << "UpdateResultsAction for region size " << m_regions_size << " and " << m_nb_regions << " regions" << std::endl;
 	if (Data<unsigned short>::getInstance()->distancemap().empty() || m_nb_regions == 0){
 		Data<unsigned short>::getInstance()->results().clear();
 		return;
@@ -56,9 +57,7 @@ void UpdateResultsAction::run()
 	std::vector< std::vector< double>> green_tmp(m_nb_regions, std::vector<double>());
 
 	//compute regionsize
-	double region_size = Data<unsigned short>::getInstance()->max_distance() / m_nb_regions;
-
-	std::cerr << "Sort pixel for region size of " << region_size << std::endl;
+	//std::cerr << "Sort pixel for region size of " << m_regions_size << std::endl;
 	double dist, r, g, r_n;
 	//get all pixel for all regions
 	for (int z = 0; z < Data<unsigned short>::getInstance()->volume()->get_depth(); z++)
@@ -71,7 +70,7 @@ void UpdateResultsAction::run()
 				
 				if (dist > 0)
 				{
-					int region = floor(dist / region_size);
+					int region = floor(dist / m_regions_size);
 					if (region >= m_nb_regions)
 						region = m_nb_regions - 1;
 					r = Data<unsigned short>::getInstance()->image_r()[z].at<unsigned short>(y, x);

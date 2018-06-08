@@ -34,10 +34,11 @@ namespace conf
 	class UpdateResultsAction
 	{
 	public:
-		UpdateResultsAction(unsigned nb_regions):m_nb_regions(nb_regions){};
+		UpdateResultsAction(double regions_size) :m_regions_size(regions_size){};
 		void run();
 	private:
 		unsigned int m_nb_regions;
+		double m_regions_size;
 	};
 }
 #endif // UPDATERESULTSACTION_H
