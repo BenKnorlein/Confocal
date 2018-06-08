@@ -36,7 +36,11 @@
 #include "Data.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include "matlab/libIso.h"
+#ifdef _WIN32
+	#include "matlab/msvc/libIso.h"
+#else
+	#include "matlab/linux/libIso.h"
+#endif
 using namespace conf;
 
 #ifdef _WIN32

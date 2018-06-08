@@ -27,22 +27,18 @@
 #pragma once
 
 #ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#ifdef _MSC_VER
 	#define _CRT_SECURE_NO_WARNINGS
 	#include <windows.h>
 	#define OS_SLASH "\\"
-#elif defined(__APPLE__)
-	#define OS_SLASH "/"
+#else
+	#define OS_SLASH "//"
 #endif
 
 #include "LoadDataAction.h"
 #include "Data.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "dirent.h"
+#include <dirent.h>
 #include <iostream>
 
 

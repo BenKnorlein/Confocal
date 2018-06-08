@@ -29,13 +29,15 @@
 #ifndef VOLUME_H
 #define VOLUME_H
 
+#include <cmath>
+
 namespace conf
 {
 	template <class T>
 	class Volume
 	{
 	public:
-		Volume<T>::Volume(unsigned int width, unsigned int height, unsigned int depth, double x_scale, double y_scale, double z_scale, unsigned int channel = 1)
+		Volume(unsigned int width, unsigned int height, unsigned int depth, double x_scale, double y_scale, double z_scale, unsigned int channel = 1)
 			: m_width{ width }, m_height{ height }, m_depth{ depth }, m_channels{ channel }
 		, m_x_scale{ x_scale }, m_y_scale{ y_scale }, m_z_scale{ z_scale }
 		{

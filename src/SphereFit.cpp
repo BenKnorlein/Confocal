@@ -35,9 +35,10 @@
 #include <iostream>
 #include "Data.h"
 #include "MSAC.h"
+#include <cmath>
 
 using namespace conf;
-std::vector<double> SphereFit::fit_function(std::vector<const cv::Point3d*>& points)
+std::vector<double> SphereFit::fit_function(std::vector<cv::Point3d*>& points)
 {
 	std::vector<double> model;
 
@@ -55,7 +56,7 @@ std::vector<double> SphereFit::fit_function(std::vector<const cv::Point3d*>& poi
 		
 		double m1 = cv::determinant(X);
 		
-		if (abs(m1) < std::numeric_limits<double>::epsilon())
+		if (fabs(m1) < std::numeric_limits<double>::epsilon())
 			return model;
 		
 
@@ -174,7 +175,7 @@ std::vector<double> SphereFit::fit_function(std::vector<const cv::Point3d*>& poi
 	return model;
 }
 
-std::vector<double> SphereFit::eval_function(std::vector<double> model, std::vector<const cv::Point3d>& points)
+std::vector<double> SphereFit::eval_function(std::vector<double> model, std::vector<cv::Point3d>& points)
 {
 	std::vector<double> error;
 	for (auto pt : points)
@@ -195,7 +196,7 @@ bool SphereFit::check_function(std::vector<double> model)
 
 void SphereFit::run()
 {
-	std::vector <const cv::Point3d> pts;
+	std::vector <cv::Point3d> pts;
 	for (int x = 0; x < Data<unsigned short>::getInstance()->volume()->get_width(); x++)
 	{
 		for (int y = 0; y < Data<unsigned short>::getInstance()->volume()->get_height(); y++)
@@ -220,7 +221,7 @@ void SphereFit::run()
 	std::vector<double> model = msac.run(getMinSamples(), pts, fit_function, eval_function, check_function, 4, 100, 99);
 	Data<unsigned short>::getInstance()->setModel(model,model[3],true);
 	std::cerr << "Center : " << Data<unsigned short>::getInstance()->center()[0] << " , " << Data<unsigned short>::getInstance()->center()[1] << " , " << Data<unsigned short>::getInstance()->center()[2] << std::endl;
-	std::cerr <<"Radius : " << Data<unsigned short>::getInstance()->max_distance() << std::endl;
+		std::cerr <<"Radius : " << Data<unsigned short>::getInstance()->max_distance() << std::endl;
 
 		Data<unsigned short>::getInstance()->distancemap().clear();
 		int y, x;

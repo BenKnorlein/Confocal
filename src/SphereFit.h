@@ -43,8 +43,8 @@ namespace conf
 			{
 				return 4;
 			}
-			std::vector<double> fit_function(std::vector<const cv::Point3d*> &points);
-			std::vector<double> eval_function(std::vector<double> model, std::vector<const cv::Point3d> &points);
+			std::vector<double> fit_function(std::vector<cv::Point3d*> &points);
+			std::vector<double> eval_function(std::vector<double> model, std::vector<cv::Point3d> &points);
 			bool check_function (std::vector<double> model);
 			void run();
 	};

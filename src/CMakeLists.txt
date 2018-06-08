@@ -14,13 +14,18 @@ if(WITH_UI)
 ENDIF()
 
 FIND_PACKAGE(OpenCV REQUIRED )
-FIND_PACKAGE(GLM REQUIRED )
+FIND_PACKAGE(glm REQUIRED )
 
-FIND_PACKAGE(Matlab COMPONENTS MX_LIBRARY REQUIRED )
-#Set Matlab mclmcrrt library
-list(GET Matlab_LIBRARIES 0 Matlab_LIBRARY)
-get_filename_component(Matlab_LIBRARY_DIR ${Matlab_LIBRARY} DIRECTORY)
-SET(Matlab_LIBRARIES ${Matlab_LIBRARIES} ${Matlab_LIBRARY_DIR}/mclmcrrt)
+IF(WIN32)
+	FIND_PACKAGE(Matlab COMPONENTS MX_LIBRARY REQUIRED )
+	#Set Matlab mclmcrrt library
+	list(GET Matlab_LIBRARIES 0 Matlab_LIBRARY)
+	get_filename_component(Matlab_LIBRARY_DIR ${Matlab_LIBRARY} DIRECTORY)
+	SET(Matlab_LIBRARIES ${Matlab_LIBRARIES} ${Matlab_LIBRARY_DIR}/mclmcrrt)
+	include_directories(${Matlab_INCLUDE_DIRS})
+ELSE()
+	SET(Matlab_LIBRARIES ${Matlab_LIBRARIES} /gpfs/runtime/opt/matlab/R2017b/runtime/glnxa64/libmwmclmcrrt.so)
+ENDIF()
 #message(get_filename_component(DIRECTORY list(GET ${Matlab_LIBRARIES} 1)))
 
 #Allow a console window on Windows for debugging
@@ -62,7 +67,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR} 
   ${OpenCV_INCLUDE_DIRS}
   ${GLM_INCLUDE_DIRS}
-  ${Matlab_INCLUDE_DIRS}
 )
 
 set(SOURCES
@@ -121,9 +125,20 @@ add_executable(Confocal
 set(LIBRARIES
 	${OpenCV_LIBS}
 	${GLM_LIBRARIES}
-	${Matlab_LIBRARIES}
-	${CMAKE_CURRENT_SOURCE_DIR}/matlab/libIso
+	/gpfs/runtime/opt/matlab/R2017b/runtime/glnxa64/libmwmclmcrrt.so
 )
+
+IF(WIN32)
+	set(LIBRARIES
+	${LIBRARIES}
+	${CMAKE_CURRENT_SOURCE_DIR}/matlab/msvc/libIso
+)
+ELSE()
+set(LIBRARIES
+	${LIBRARIES}
+	${CMAKE_CURRENT_SOURCE_DIR}/matlab/linux/libIso.so
+)
+ENDIF()
 
 if(WITH_UI)
 	set(LIBRARIES

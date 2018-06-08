@@ -99,7 +99,7 @@ namespace conf
 			m_volume.reset(new conf::Volume<unsigned short>(m_image_r[0].cols, m_image_r[0].rows, m_image_r.size(), 0.645, 0.645, 5, 3)); //TODO offset variable 
 	
 			//fill vol and points
-			std::vector <const cv::Point3d> pts;
+			std::vector <cv::Point3d> pts;
 			for (int x = 0; x < m_volume->get_width(); x++)
 			{
 				for (int y = 0; y < m_volume->get_height(); y++)

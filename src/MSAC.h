@@ -39,9 +39,9 @@ namespace conf
 	class MSAC
 	{
 		public:
-			std::vector<double> run(const unsigned int &samples, std::vector<const cv::Point3d> &all_pts,
-				std::function<std::vector<double>(std::vector<const cv::Point3d*>&)> fit_function,
-				std::function<std::vector<double>(std::vector<double>, std::vector<const cv::Point3d> &)> eval_function,
+			std::vector<double> run(const unsigned int &samples, std::vector<cv::Point3d> &all_pts,
+				std::function<std::vector<double>(std::vector<cv::Point3d*>&)> fit_function,
+				std::function<std::vector<double>(std::vector<double>, std::vector<cv::Point3d> &)> eval_function,
 				std::function<bool(std::vector<double>)> check_function,
 				const double &max_distance, const unsigned int &max_trials = 1000, const double &confidence = 99, bool compute_with_all_inlier = false);
 

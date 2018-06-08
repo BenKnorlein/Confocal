@@ -72,9 +72,9 @@ unsigned int MSAC::computeRemainingLoops(const unsigned int &_samples, const dou
 
 }
 
-std::vector<double> MSAC::run(const unsigned int &samples, std::vector<const cv::Point3d> &all_pts,
-		std::function<std::vector<double>(std::vector<const cv::Point3d*>&)> fit_function, 
-		std::function<std::vector<double>(std::vector<double>, std::vector<const cv::Point3d> &)> eval_function,
+std::vector<double> MSAC::run(const unsigned int &samples, std::vector<cv::Point3d> &all_pts,
+		std::function<std::vector<double>(std::vector<cv::Point3d*>&)> fit_function, 
+		std::function<std::vector<double>(std::vector<double>, std::vector<cv::Point3d> &)> eval_function,
 		std::function<bool(std::vector<double>)> check_function,
 		const double &max_distance, const unsigned int &max_trials, const double &confidence, bool compute_with_all_inlier)
 {
@@ -85,10 +85,11 @@ std::vector<double> MSAC::run(const unsigned int &samples, std::vector<const cv:
 	std::vector<double> best_model;
 	double best_distance = std::numeric_limits<double>::max();
 	unsigned int best_nb_inlier = 0;
+	
 	std::vector<bool> inlier(all_pts.size());
 	std::vector<bool> best_inlier(all_pts.size());
 
-	std::vector<const cv::Point3d * > sample_pts(samples);
+	std::vector<cv::Point3d * > sample_pts(samples);
 
 	std::default_random_engine e{ static_cast <unsigned int> (std::chrono::system_clock::now().time_since_epoch().count()) };
 	std::uniform_int_distribution<unsigned int> d{ 0, static_cast <unsigned int>(all_pts.size() - 1) };
