@@ -36,7 +36,6 @@
 #include "ConfocalDockWidget.h"
 #include "ConfocalSliceView.h"
 #include "Plotwindow.h"
-#include "PlotWindow.h"
 
 using namespace conf;
 

@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 OPTION(WITH_UI "Build with a command line for debugging" OFF)
 
 if(WITH_UI)
-	FIND_PACKAGE(Qt5 COMPONENTS Core Widgets GUI PrintSupport REQUIRED)
+	FIND_PACKAGE(Qt5 COMPONENTS Core Widgets Gui PrintSupport REQUIRED)
 	find_package(OpenGL REQUIRED)
 	find_package(GLEW REQUIRED)
 	ADD_DEFINITIONS(-DWITH_UI)	
@@ -107,8 +107,8 @@ if(WITH_UI)
 		  VolumeSliceRenderShader.cpp
 		  Shader.cpp
 		  Shader.h
-		  PlotWindow.cpp
-		  PlotWindow.h
+		  Plotwindow.cpp
+		  Plotwindow.h
 		  ConfocalSliceView.h
 		  ConfocalSliceView.cpp
 		  ConfocalSliceViewWidget.h
