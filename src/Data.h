@@ -187,6 +187,16 @@ namespace conf
 			this->m_active_point = active_point;
 		}
 
+		int region_size() const
+		{
+			return m_region_size;
+		}
+
+		void set_region_size(const double region_size)
+		{
+			this->m_region_size = region_size;
+		}
+
 		std::vector<std::vector<double> > &results()
 		{
 			return m_results;
@@ -215,6 +225,8 @@ namespace conf
 
 		// Red (pixel normalized) - Red (region normalized)- Red - Green - NbPixel - sd Red (normalized) - sd Red - sd Green
 		std::vector <std::vector <double> > m_results;
+
+		double m_region_size;
 
 		int m_active_point;
 

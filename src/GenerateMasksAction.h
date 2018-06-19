@@ -36,7 +36,7 @@ namespace conf
 	class GenerateMasksAction
 	{
 	public:
-		GenerateMasksAction();
+		GenerateMasksAction(int iterations = 300, double contractionbias = 0, double smoothness = 0);
 		virtual ~GenerateMasksAction();
 		void run();
 	private:
@@ -44,6 +44,9 @@ namespace conf
 		void drawCircle(int slice, cv::Mat & image, cv::Scalar color);
 
 		bool m_Initialized_ISO;
+		int m_iterations;
+		double m_contractionbias;
+		double m_smoothness;
 	};
 }
 #endif // GENERATEMASKSACTION_H

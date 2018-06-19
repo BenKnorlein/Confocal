@@ -49,6 +49,7 @@ if(WITH_UI)
 		ui/ConfocalMainWindow.ui
 		ui/PlotWindow.ui
 		ui/ConfocalSliceView.ui
+		ui/ProcessingDialog.ui
 	)
 	QT5_WRAP_UI(Confocal_FORMS_HEADERS_GEN ${Confocal_FORMS})
 
@@ -90,6 +91,10 @@ set(SOURCES
     GenerateMasksAction.cpp
     UpdateResultsAction.h
     UpdateResultsAction.cpp
+	SaveProcessedDataAction.h
+	SaveProcessedDataAction.cpp
+	LoadProcessedDataAction.h
+	LoadProcessedDataAction.cpp
 )
 
 if(WITH_UI)
@@ -115,6 +120,8 @@ if(WITH_UI)
 		  ConfocalSliceViewWidget.cpp
 		  external/qcustomplot.cpp
 		  external/qcustomplot.h
+		  ProcessingDialog.h
+		  ProcessingDialog.cpp
 		  ${Confocal_FORMS_HEADERS_GEN}
 	)
 endif()

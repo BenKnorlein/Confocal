@@ -50,8 +50,9 @@ namespace conf
 	public slots:
 		void on_pushButton_Load_clicked();
 		void on_pushButton_Compute_clicked();
-		void on_pushButton_Refine_clicked();
 		void on_pushButton_Masks_clicked();
+		void on_pushButton_LoadProcessed_clicked();
+		void on_pushButton_SaveProcessed_clicked();
 		void on_horizontalSlider_Multiplier_valueChanged(int value);
 		void on_horizontalSlider_Threshold_valueChanged(int value);
 	};

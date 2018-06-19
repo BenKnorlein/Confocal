@@ -1,13 +1,15 @@
-function [Surface, DistanceMap] = processActiveContour(ImageStack, Mask, Params, Aspect)
+function [Surface, DistanceMap] = processActiveContour(ImageStack, Mask, Params, Aspect, Options)
 %PROCESSACTIVECONTOUR Summary of this function goes here
 % [A , B] = processActiveContour(I,mask,[300 0 18],[0.645 0.645 5])
 
 nbIterations = Params(1);
 draw = Params(2);
 con_neighbourhood = double(Params(3));
+contractionbias = Options(1);
+smoothness = Options(2);
 
 %compute countour
-bw = activecontour(ImageStack,Mask,nbIterations);
+bw = activecontour(ImageStack,Mask,nbIterations,'Chan-Vese', 'ContractionBias', contractionbias, 'SmoothFactor', smoothness );
 
 % Remove smaller segmented regions and only keep the largest one
 CC = bwconncomp(bw, con_neighbourhood);

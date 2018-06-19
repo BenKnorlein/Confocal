@@ -51,7 +51,8 @@ using namespace conf;
 
 extern bool m_Initialized_MCR;
 
-GenerateMasksAction::GenerateMasksAction() : m_Initialized_ISO(false)
+GenerateMasksAction::GenerateMasksAction(int iterations, double contractionbias, double smoothness) 
+: m_Initialized_ISO(false) , m_iterations(iterations), m_contractionbias(contractionbias), m_smoothness(smoothness)
 {
 	// Call application and library initialization. Perform this 
 	// initialization before calling any API functions or
@@ -195,8 +196,8 @@ void GenerateMasksAction::run()
 
 		
 		//parameter
-		mwArray params(1, 3, mxINT32_CLASS);
-		int params_data[3] = { 300, 0 ,18};
+		mwArray params(1, 3, mxDOUBLE_CLASS);
+		int params_data[3] = { m_iterations, 0 ,18};
 		params.SetData(params_data,3);
 		
 		mwArray aspect(1, 3, mxDOUBLE_CLASS);
@@ -205,6 +206,11 @@ void GenerateMasksAction::run()
 								Data<unsigned short>::getInstance()->volume()->get_z_scale() };
 		aspect.SetData(aspect_data, 3);
 
+		mwArray options(1, 2, mxDOUBLE_CLASS);
+		double options_data[2] = { m_contractionbias, m_smoothness};
+		options.SetData(options_data, 2);
+
+
 		//output
 		int n_out = 2;
 		mwArray mesh;
@@ -212,7 +218,7 @@ void GenerateMasksAction::run()
 
 		//run8
 		std::cerr << "Start Processing" << std::endl;
-		processActiveContour(n_out, mesh, distancemap, images, mask, params, aspect);
+		processActiveContour(n_out, mesh, distancemap, images, mask, params, aspect, options);
 
 		mwArray vertices_size = mesh.Get("vertices", 1, 1).GetDimensions();
 		std::cerr << "Vertices " << (int) vertices_size.Get(1, 1) << std::endl;
@@ -287,41 +293,4 @@ void GenerateMasksAction::run()
 		Data<unsigned short>::getInstance()->emitter()->mesh_updated();
 #endif
 	}
-
-
-
-
-	//for (int im = 0; im < Data<unsigned short>::getInstance()->image_g().size(); im++){
-	//	//setup tmp variables
-	//	std::vector<std::vector<cv::Point> > contours_tmp;
-	//	std::vector<cv::Vec4i> hierarchy_tmp;
-	//	cv::Mat tmp = cv::Mat::zeros(Data<unsigned short>::getInstance()->image_g()[im].rows, Data<unsigned short>::getInstance()->image_g()[im].cols, CV_8UC1);
-
-	//	//create Circle Mask
-	//	cv::Mat mask_circle = cv::Mat::zeros(Data<unsigned short>::getInstance()->image_g()[im].rows, Data<unsigned short>::getInstance()->image_g()[im].cols, CV_8UC1);
-	//	drawCircle(im, tmp, cv::Scalar(255));
-	//	cv::findContours(tmp, contours_tmp, hierarchy_tmp, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-	//	drawContours(mask_circle, contours_tmp, -1, cv::Scalar(255), CV_FILLED);
-
-	//	//clear tmp variables
-	//	contours_tmp.clear();
-	//	hierarchy_tmp.clear();
-	//	tmp = cv::Mat::zeros(Data<unsigned short>::getInstance()->image_g()[im].rows, Data<unsigned short>::getInstance()->image_g()[im].cols, CV_8UC1);
-
-	//	//create Mesh Mask
-	//	cv::Mat mask_mesh = cv::Mat::zeros(Data<unsigned short>::getInstance()->image_g()[im].rows, Data<unsigned short>::getInstance()->image_g()[im].cols, CV_8UC1);
-	//	drawMesh(im,tmp, cv::Scalar(255));
-	//	cv::findContours(tmp, contours_tmp, hierarchy_tmp, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-	//	drawContours(mask_mesh, contours_tmp, -1, cv::Scalar(255), CV_FILLED);
-
-	//	QString filename = QString::fromStdString(m_folder) + OS_SEP + "mask_circle" + QString::number(im).rightJustified(5, '0') + ".tif";
-	//	cv::imwrite(filename.toStdString(), mask_circle);
-
-	//	filename = QString::fromStdString(m_folder) + OS_SEP + "mask_mesh" + QString::number(im).rightJustified(5, '0') + ".tif";
-	//	cv::imwrite(filename.toStdString(), mask_mesh);
-
-	//	filename = QString::fromStdString(m_folder) + OS_SEP + "image" + QString::number(im).rightJustified(5, '0') + ".tif";
-	//	cv::imwrite(filename.toStdString(), Data<unsigned short>::getInstance()->image_g()[im]);
-
-	//}
 }

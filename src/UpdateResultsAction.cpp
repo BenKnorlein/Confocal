@@ -38,6 +38,7 @@ using namespace conf;
 
 void UpdateResultsAction::run()
 {
+	Data<unsigned short>::getInstance()->set_region_size(m_regions_size);
 	m_nb_regions = ceil((Data<unsigned short>::getInstance()->max_distance()  / m_regions_size));
 	std::cerr << "UpdateResultsAction for region size " << m_regions_size << " and " << m_nb_regions << " regions" << std::endl;
 	if (Data<unsigned short>::getInstance()->distancemap().empty() || m_nb_regions == 0){

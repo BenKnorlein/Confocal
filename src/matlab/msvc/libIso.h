@@ -1,10 +1,10 @@
 //
 // MATLAB Compiler: 6.6 (R2018a)
-// Date: Fri May 11 14:33:49 2018
+// Date: Tue Jun 12 16:52:17 2018
 // Arguments:
 // "-B""macro_default""-W""cpplib:libIso,all""-T""link:lib""-d""C:\Workspace\pro
-// jects\Confocal\buildx64\bin\Release\matlab\libIso\for_testing""-v""C:\Workspa
-// ce\projects\Confocal\buildx64\bin\Release\matlab\processActiveContour.m"
+// jects\Confocal\matlab\libIso\for_testing""-v""C:\Workspace\projects\Confocal\
+// matlab\processActiveContour.m"
 //
 
 #ifndef __libIso_h
@@ -84,7 +84,7 @@ bool MW_CALL_CONV mlxProcessActiveContour(int nlhs, mxArray *plhs[], int nrhs, m
 
 #endif
 
-extern LIB_libIso_CPP_API void MW_CALL_CONV processActiveContour(int nargout, mwArray& Surface, mwArray& DistanceMap, const mwArray& ImageStack, const mwArray& Mask, const mwArray& Params, const mwArray& Aspect);
+extern LIB_libIso_CPP_API void MW_CALL_CONV processActiveContour(int nargout, mwArray& Surface, mwArray& DistanceMap, const mwArray& ImageStack, const mwArray& Mask, const mwArray& Params, const mwArray& Aspect, const mwArray& Options);
 
 /* C++ INTERFACE -- WRAPPERS FOR USER-DEFINED MATLAB FUNCTIONS -- END */
 #endif
